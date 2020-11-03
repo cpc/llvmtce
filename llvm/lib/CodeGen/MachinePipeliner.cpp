@@ -1467,11 +1467,11 @@ void SwingSchedulerDAG::computeNodeFunctions(NodeSetType &NodeSets) {
                                     EP = SU->Preds.end();
          IP != EP; ++IP) {
       SUnit *pred = IP->getSUnit();
+      if (ignoreDependence(*IP, true))
+        continue;
       if (IP->getLatency() == 0)
         zeroLatencyDepth =
             std::max(zeroLatencyDepth, getZeroLatencyDepth(pred) + 1);
-      if (ignoreDependence(*IP, true))
-        continue;
       asap = std::max(asap, (int)(getASAP(pred) + IP->getLatency() -
                                   getDistance(pred, SU, *IP) * MII));
     }
@@ -1491,13 +1491,16 @@ void SwingSchedulerDAG::computeNodeFunctions(NodeSetType &NodeSets) {
                                     ES = SU->Succs.end();
          IS != ES; ++IS) {
       SUnit *succ = IS->getSUnit();
-      if (IS->getLatency() == 0)
-        zeroLatencyHeight =
-            std::max(zeroLatencyHeight, getZeroLatencyHeight(succ) + 1);
       if (ignoreDependence(*IS, true))
-        continue;
-      alap = std::min(alap, (int)(getALAP(succ) - IS->getLatency() +
-                                  getDistance(SU, succ, *IS) * MII));
+          continue;
+      if (IS->getLatency() == 0) {
+	if(!(succ->NodeNum >= SUnits.size())) {
+	  zeroLatencyHeight =
+            std::max(zeroLatencyHeight, getZeroLatencyHeight(succ) + 1);
+          alap = std::min(alap, (int)(getALAP(succ) - IS->getLatency() +
+                                    getDistance(SU, succ, *IS) * MII));
+	}
+      }
     }
 
     ScheduleInfo[*I].ALAP = alap;
