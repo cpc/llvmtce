@@ -31,9 +31,9 @@ namespace targets {
 
 static const unsigned TCEOpenCLAddrSpaceMap[] = {
     0, // Default
-    3, // opencl_global
-    4, // opencl_local
-    5, // opencl_constant
+    1, // opencl_global
+    3, // opencl_local
+    2, // opencl_constant
     0, // opencl_private
     1, // opencl_global_device
     1, // opencl_global_host
