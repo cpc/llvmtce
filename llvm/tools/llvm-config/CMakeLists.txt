@@ -8,6 +8,8 @@ add_llvm_tool(llvm-config
   llvm-config.cpp
   )
 
+set_target_properties(llvm-config PROPERTIES OUTPUT_NAME llvmtce-config)
+
 # Compute the substitution values for various items.
 get_property(SUPPORT_SYSTEM_LIBS TARGET LLVMSupport PROPERTY LLVM_SYSTEM_LIBS)
 get_property(WINDOWSMANIFEST_SYSTEM_LIBS TARGET LLVMWindowsManifest PROPERTY LLVM_SYSTEM_LIBS)
