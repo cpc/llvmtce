@@ -485,6 +485,9 @@ TargetInfo *AllocateTarget(const llvm::Triple &Triple,
   case llvm::Triple::tcele:
     return new TCELETargetInfo(Triple, Opts);
 
+  case llvm::Triple::tcele64:
+    return new TCELE64TargetInfo(Triple, Opts);
+
   case llvm::Triple::x86:
     if (Triple.isOSDarwin())
       return new DarwinI386TargetInfo(Triple, Opts);

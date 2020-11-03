@@ -80,6 +80,7 @@ public:
     systemz,        // SystemZ: s390x
     tce,            // TCE (http://tce.cs.tut.fi/): tce
     tcele,          // TCE little endian (http://tce.cs.tut.fi/): tcele
+    tcele64,        // TCE little endian 64 (http://tce.cs.tut.fi/): tcele64
     thumb,          // Thumb (little endian): thumb, thumbv.*
     thumbeb,        // Thumb (big endian): thumbeb
     x86,            // X86: i[3-9]86
