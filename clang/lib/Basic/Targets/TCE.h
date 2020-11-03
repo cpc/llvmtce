@@ -135,6 +135,39 @@ public:
   void getTargetDefines(const LangOptions &Opts,
                         MacroBuilder &Builder) const override;
 };
+
+class TCELE64TargetInfo : public TCETargetInfo {
+public:
+  TCELE64TargetInfo(const llvm::Triple &Triple, const TargetOptions &Opts)
+      : TCETargetInfo(Triple, Opts) {
+    BigEndian = false;
+
+    resetDataLayout("e-p:64:64:64-i1:8:64-i8:8:64-"
+                    "i16:16:64-i32:32:64-i64:64:64-"
+                    "f32:32:64-f64:64:64-v64:64:64-"
+                    "v128:128:128-v256:256:256-v512:512:512-"
+                    "v1024:1024:1024-v2048:2048:2048-"
+                    "v4096:4096:4096-a0:0:64-n64");
+
+    LongWidth = LongLongWidth = 64;
+    PointerWidth = 64;
+    PointerAlign = 64;
+    LongAlign = LongLongAlign = 64;
+    IntPtrType = SignedLong;
+    SizeType = UnsignedLong;
+    PtrDiffType = SignedLong;
+    DoubleWidth = 64; // 64;
+    DoubleAlign = 64; // 64;
+    LongDoubleWidth = 64; // 64;
+    LongDoubleAlign = 64; // 64;
+    DoubleFormat = &llvm::APFloat::IEEEdouble();
+    LongDoubleFormat = &llvm::APFloat::IEEEdouble();
+  }
+
+   void getTargetDefines(const LangOptions &Opts,
+                         MacroBuilder &Builder) const override;
+};
+
 } // namespace targets
 } // namespace clang
 #endif // LLVM_CLANG_LIB_BASIC_TARGETS_TCE_H
