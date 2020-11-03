@@ -318,12 +318,11 @@ void ModuloScheduleExpander::generateEpilog(
   // Create a branch to the new epilog from the kernel.
   // Remove the original branch and add a new branch to the epilog.
   TII->removeBranch(*KernelBB);
-  assert((OrigBB == TBB || OrigBB == FBB) &&
-         "Unable to determine looping branch direction");
-  if (OrigBB != TBB)
+  if(LoopExitBB == TBB) {
     TII->insertBranch(*KernelBB, EpilogStart, KernelBB, Cond, DebugLoc());
-  else
+  } else {
     TII->insertBranch(*KernelBB, KernelBB, EpilogStart, Cond, DebugLoc());
+  }
   // Add a branch to the loop exit.
   if (EpilogBBs.size() > 0) {
     MachineBasicBlock *LastEpilogBB = EpilogBBs.back();
