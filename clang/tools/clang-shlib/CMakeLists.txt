@@ -43,6 +43,7 @@ endif()
 
 add_clang_library(clang-cpp
                   SHARED
+                  OUTPUT_NAME "clangTCE-cpp"
                   ${INSTALL_WITH_TOOLCHAIN}
                   clang-shlib.cpp
                   ${_OBJECTS}
