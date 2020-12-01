@@ -347,7 +347,7 @@ action("LibraryDependencies.inc") {
   ]
 }
 
-executable("llvm-config") {
+executable("llvmtce-config") {
   deps = [
     ":BuildVariables.inc",
     ":LibraryDependencies.inc",
