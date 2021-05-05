@@ -238,6 +238,7 @@ Options:\n\
   --shared-mode     Print how the provided components can be collectively linked (`shared` or `static`).\n\
   --link-shared     Link the components as shared libraries.\n\
   --link-static     Link the component libraries statically.\n\
+  --tce-patches     Print list of applied TCE patches.\n\
   --ignore-libllvm  Ignore libLLVM and link component libraries instead.\n\
 Typical components:\n\
   all               All LLVM libraries (default).\n\
@@ -592,6 +593,11 @@ int main(int argc, char **argv) {
         LinkMode = LinkModeShared;
       } else if (Arg == "--link-static") {
         LinkMode = LinkModeStatic;
+      } else if (Arg == "--tce-patches") {
+	OS << "custom-vector-extension-wide" << '\n'
+	   << "tce-and-tcele" << '\n'
+	   << "memcpyoptimizer-only-on-default-as" << '\n'
+	   << "loopidiomrecognize-only-on-default-as" << '\n';
       } else {
         usage();
       }
