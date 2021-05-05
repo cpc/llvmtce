@@ -256,6 +256,8 @@ enum IIT_Info {
   IIT_ANYPTR_TO_ELT = 56,
   IIT_I2 = 57,
   IIT_I4 = 58,
+  IIT_V2048 = 59,
+  IIT_V4096 = 60,
 };
 
 static void EncodeFixedValueType(MVT::SimpleValueType VT,
@@ -414,6 +416,8 @@ static void EncodeFixedType(Record *R, std::vector<unsigned char> &ArgCodes,
     case 256: Sig.push_back(IIT_V256); break;
     case 512: Sig.push_back(IIT_V512); break;
     case 1024: Sig.push_back(IIT_V1024); break;
+    case 2048: Sig.push_back(IIT_V2048); break;
+    case 4096: Sig.push_back(IIT_V4096); break;
     }
 
     return EncodeFixedValueType(VVT.getVectorElementType().SimpleTy, Sig);
