@@ -63,17 +63,19 @@ namespace llvm {
       FIRST_FP_VALUETYPE = bf16,
       LAST_FP_VALUETYPE  = ppcf128,
 
-      v1i1           =  17,   //    1 x i1
-      v2i1           =  18,   //    2 x i1
-      v4i1           =  19,   //    4 x i1
-      v8i1           =  20,   //    8 x i1
-      v16i1          =  21,   //   16 x i1
-      v32i1          =  22,   //   32 x i1
-      v64i1          =  23,   //   64 x i1
-      v128i1         =  24,   //  128 x i1
-      v256i1         =  25,   //  256 x i1
-      v512i1         =  26,   //  512 x i1
-      v1024i1        =  27,   // 1024 x i1
+      v1i1           =  15,   //    1 x i1
+      v2i1           =  16,   //    2 x i1
+      v4i1           =  17,   //    4 x i1
+      v8i1           =  18,   //    8 x i1
+      v16i1          =  19,   //   16 x i1
+      v32i1          =  20,   //   32 x i1
+      v64i1          =  21,   //   64 x i1
+      v128i1         =  22,   //  128 x i1
+      v256i1         =  23,   //  256 x i1
+      v512i1         =  24,   //  512 x i1
+      v1024i1        =  25,   // 1024 x i1
+      v2048i1        =  26,   // 2048 x i1
+      v4096i1        =  27,   // 4096 x i1
 
       v128i2         =  28,   //  128 x i2
 
@@ -456,6 +458,12 @@ namespace llvm {
               SimpleTy == MVT::v32f64  || SimpleTy == MVT::v128bf16);
     }
 
+    bool is4096BitVector() const {
+      return (SimpleTy == MVT::v4096i1 || SimpleTy == MVT::v512i8 ||
+	      SimpleTy == MVT::v256i16 || SimpleTy == MVT::v128i32 ||
+	      SimpleTy == MVT::v256f16 || SimpleTy == MVT::v128f32);
+    }
+
     /// Return true if this is an overloaded type for TableGen.
     bool isOverloaded() const {
       return (SimpleTy == MVT::Any || SimpleTy == MVT::iAny ||
@@ -541,6 +549,8 @@ namespace llvm {
       case v256i1:
       case v512i1:
       case v1024i1:
+      case v2048i1:
+      case v4096i1:
       case nxv1i1:
       case nxv2i1:
       case nxv4i1:
@@ -700,11 +710,13 @@ namespace llvm {
       default:
         llvm_unreachable("Not a vector MVT!");
       case v2048i32:
+      case v2048i1:
       case v2048f32: return 2048;
       case v1024i1:
       case v1024i8:
       case v1024i32:
       case v1024f32: return 1024;
+      case v4096i1: return 4096;
       case v512i1:
       case v512i8:
       case v512i16:
@@ -1045,6 +1057,7 @@ namespace llvm {
       case v16f64: return TypeSize::Fixed(1024);
       case nxv32i32:
       case nxv16i64: return TypeSize::Scalable(1024);
+      case v2048i1:
       case v256i8:
       case v128i16:
       case v64i32:
@@ -1054,6 +1067,7 @@ namespace llvm {
       case v64f32:
       case v32f64: return TypeSize::Fixed(2048);
       case nxv32i64: return TypeSize::Scalable(2048);
+      case v4096i1:
       case v512i8:
       case v256i16:
       case v128i32:
@@ -1230,6 +1244,8 @@ namespace llvm {
         if (NumElements == 256)  return MVT::v256i1;
         if (NumElements == 512)  return MVT::v512i1;
         if (NumElements == 1024) return MVT::v1024i1;
+	if (NumElements == 2048) return MVT::v2048i1;
+	if (NumElements == 4096) return MVT::v4096i1;
         break;
       case MVT::i2:
         if (NumElements == 128) return MVT::v128i2;
