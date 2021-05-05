@@ -234,22 +234,24 @@ enum IIT_Info {
   IIT_PTR_TO_ELT = 33,
   IIT_VEC_OF_ANYPTRS_TO_ELT = 34,
   IIT_I128 = 35,
-  IIT_V512 = 36,
-  IIT_V1024 = 37,
-  IIT_STRUCT6 = 38,
-  IIT_STRUCT7 = 39,
-  IIT_STRUCT8 = 40,
-  IIT_F128 = 41,
-  IIT_VEC_ELEMENT = 42,
-  IIT_SCALABLE_VEC = 43,
-  IIT_SUBDIVIDE2_ARG = 44,
-  IIT_SUBDIVIDE4_ARG = 45,
-  IIT_VEC_OF_BITCASTS_TO_INT = 46,
-  IIT_V128 = 47,
-  IIT_BF16 = 48,
-  IIT_STRUCT9 = 49,
-  IIT_V256 = 50,
-  IIT_AMX  = 51
+  IIT_V128 = 36,
+  IIT_V256 = 37,
+  IIT_V512 = 38,
+  IIT_V1024 = 39,
+  IIT_V2048 = 40,
+  IIT_V4096 = 41,
+  IIT_STRUCT6 = 42,
+  IIT_STRUCT7 = 43,
+  IIT_STRUCT8 = 44,
+  IIT_STRUCT9 = 45,
+  IIT_F128 = 46,
+  IIT_VEC_ELEMENT = 47,
+  IIT_SCALABLE_VEC = 48,
+  IIT_SUBDIVIDE2_ARG = 49,
+  IIT_SUBDIVIDE4_ARG = 50,
+  IIT_VEC_OF_BITCASTS_TO_INT = 51,
+  IIT_BF16 = 52,
+  IIT_AMX  = 53
 };
 
 static void EncodeFixedValueType(MVT::SimpleValueType VT,
@@ -391,6 +393,8 @@ static void EncodeFixedType(Record *R, std::vector<unsigned char> &ArgCodes,
     case 256: Sig.push_back(IIT_V256); break;
     case 512: Sig.push_back(IIT_V512); break;
     case 1024: Sig.push_back(IIT_V1024); break;
+    case 2048: Sig.push_back(IIT_V2048); break;
+    case 4096: Sig.push_back(IIT_V4096); break;
     }
 
     return EncodeFixedValueType(VVT.getVectorElementType().SimpleTy, Sig);
