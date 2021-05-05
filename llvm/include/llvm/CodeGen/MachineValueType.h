@@ -173,6 +173,11 @@ namespace llvm {
       return (isFixedLengthVector() && getFixedSizeInBits() == 2048);
     }
 
+    /// Return true if this is a 4096-bit vector type.
+    bool is4096BitVector() const {
+      return (isFixedLengthVector() && getFixedSizeInBits() == 4096);
+    }
+
     /// Return true if this is an overloaded type for TableGen.
     bool isOverloaded() const {
       switch (SimpleTy) {

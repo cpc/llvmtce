@@ -101,6 +101,7 @@ StringRef llvm::getEnumName(MVT::SimpleValueType T) {
   case MVT::v256i2:   return "MVT::v256i2";
   case MVT::v64i4:    return "MVT::v64i4";
   case MVT::v128i4:   return "MVT::v128i4";
+  case MVT::v4096i1:  return "MVT::v4096i1";
   case MVT::v1i8:     return "MVT::v1i8";
   case MVT::v2i8:     return "MVT::v2i8";
   case MVT::v4i8:     return "MVT::v4i8";
