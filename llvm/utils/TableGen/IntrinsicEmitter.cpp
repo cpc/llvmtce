@@ -252,7 +252,9 @@ enum IIT_Info {
   IIT_PPCF128 = 52,
   IIT_V3 = 53,
   IIT_EXTERNREF = 54,
-  IIT_FUNCREF = 55
+  IIT_FUNCREF = 55,
+  IIT_V2048 = 56,
+  IIT_V4096 = 57,
 };
 
 static void EncodeFixedValueType(MVT::SimpleValueType VT,
@@ -400,6 +402,8 @@ static void EncodeFixedType(Record *R, std::vector<unsigned char> &ArgCodes,
     case 256: Sig.push_back(IIT_V256); break;
     case 512: Sig.push_back(IIT_V512); break;
     case 1024: Sig.push_back(IIT_V1024); break;
+    case 2048: Sig.push_back(IIT_V2048); break;
+    case 4096: Sig.push_back(IIT_V4096); break;
     }
 
     return EncodeFixedValueType(VVT.getVectorElementType().SimpleTy, Sig);
