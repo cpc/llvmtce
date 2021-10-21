@@ -117,6 +117,11 @@ public:
   ArrayRef<TargetInfo::GCCRegAlias> getGCCRegAliases() const override {
     return std::nullopt;
   }
+
+  // TCE does not have fixed, but user specified register names.
+  bool isValidGCCRegisterName(StringRef Name) const override {
+   return true;
+  }
 };
 
 class LLVM_LIBRARY_VISIBILITY TCELETargetInfo : public TCETargetInfo {
