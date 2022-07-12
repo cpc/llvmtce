@@ -35,6 +35,8 @@
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/Transforms/IPO.h"
 #include <optional>
+#include "llvm/Support/DynamicLibrary.h"
+
 using namespace llvm;
 
 static cl::opt<bool> EnableRedundantCopyElimination(
@@ -371,6 +373,14 @@ void RISCVPassConfig::addPreEmitPass2() {
   addPass(createUnpackMachineBundles([&](const MachineFunction &MF) {
     return MF.getFunction().getParent()->getModuleFlag("kcfi");
   }));
+
+  // load the OpenASIP RISCV instrinsics pass if available via loaded plugins
+  typedef llvm::FunctionPass* (*BuilderFunc)(const char*);
+  BuilderFunc passCreator = 
+      (BuilderFunc)llvm::sys::DynamicLibrary::SearchForAddressOfSymbol(
+          "createRISCVIntrinsicsPass");
+  if (passCreator != NULL)
+      addPass(passCreator("riscv32"));
 }
 
 void RISCVPassConfig::addMachineSSAOptimization() {
