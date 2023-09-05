@@ -345,6 +345,12 @@ void RISCVPassConfig::addPreEmitPass2() {
           "createRISCVIntrinsicsPass");
   if (passCreator != NULL)
       addPass(passCreator("riscv32"));
+  
+  BuilderFunc dsPassCreator = 
+      (BuilderFunc)llvm::sys::DynamicLibrary::SearchForAddressOfSymbol(
+          "createDualISPass");
+  if (dsPassCreator != NULL)
+      addPass(dsPassCreator("riscv32"));
 }
 
 void RISCVPassConfig::addMachineSSAOptimization() {
