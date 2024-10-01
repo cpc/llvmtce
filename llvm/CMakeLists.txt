@@ -1228,6 +1228,16 @@ if (LLVM_INCLUDE_UTILS)
   add_subdirectory(utils/llvm-lit)
 endif()
 
+# Copy the RISCV Target directory to
+install(DIRECTORY ${LLVM_MAIN_SRC_DIR}/lib/Target/RISCV
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/riscv/LLVMRISCVTarget
+  FILES_MATCHING
+  PATTERN "*"
+  PATTERN "cmake/*" EXCLUDE
+  PATTERN "*.inc" EXCLUDE
+  PATTERN "*.def" EXCLUDE
+  PATTERN "CMakeLists.txt" EXCLUDE)
+
 if (NOT LLVM_INSTALL_TOOLCHAIN_ONLY)
   install(DIRECTORY include/llvm include/llvm-c
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"

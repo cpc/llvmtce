@@ -1970,3 +1970,9 @@ include "RISCVInstrInfoXVentana.td"
 include "RISCVInstrInfoXTHead.td"
 include "RISCVInstrInfoXSf.td"
 include "RISCVInstrInfoXCV.td"
+
+//===----------------------------------------------------------------------===//
+// Generated OpenASIP extensions
+//===----------------------------------------------------------------------===//
+
+include "RISCVInstrInfoOpenASIP.td"

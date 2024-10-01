@@ -42,6 +42,7 @@
 #include "llvm/Support/MathExtras.h"
 #include "llvm/Support/raw_ostream.h"
 #include <optional>
+#include "OpenASIPDefines.h"
 
 using namespace llvm;
 
@@ -297,7 +298,13 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       setOperationAction({ISD::ROTL, ISD::ROTR}, MVT::i32, Custom);
     setOperationAction({ISD::ROTL, ISD::ROTR}, XLenVT, Custom);
   } else {
-    setOperationAction({ISD::ROTL, ISD::ROTR}, XLenVT, Expand);
+#ifndef OPENASIP_ROTL
+    setOperationAction(ISD::ROTL, XLenVT, Expand);
+#endif
+#ifndef OPENASIP_ROTR
+    setOperationAction(ISD::ROTR, XLenVT, Expand);
+#endif
+
   }
 
   // With Zbb we have an XLen rev8 instruction, but not GREVI. So we'll
@@ -323,6 +330,20 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setOperationAction({ISD::CTTZ, ISD::CTLZ, ISD::CTPOP}, XLenVT, Expand);
   }
 
+#ifdef OPENASIP_MIN
+        setOperationAction(ISD::SMIN, XLenVT, Legal);
+#endif
+#ifdef OPENASIP_MAX
+        setOperationAction(ISD::SMAX, XLenVT, Legal);
+#endif
+#ifdef OPENASIP_MINU
+        setOperationAction(ISD::UMIN, XLenVT, Legal);
+#endif
+#ifdef OPENASIP_MAXU
+        setOperationAction(ISD::UMAX, XLenVT, Legal);
+#endif
+
+
   if (Subtarget.hasVendorXTHeadBb()) {
     setOperationAction(ISD::CTLZ, XLenVT, Legal);
 
@@ -335,8 +356,10 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   if (Subtarget.is64Bit())
     setOperationAction(ISD::ABS, MVT::i32, Custom);
 
+#ifndef OPENASIP_SELECT
   if (!Subtarget.hasVendorXTHeadCondMov())
     setOperationAction(ISD::SELECT, XLenVT, Custom);
+#endif
 
   static const unsigned FPLegalNodeTypes[] = {
       ISD::FMINNUM,        ISD::FMAXNUM,       ISD::LRINT,
@@ -1013,8 +1036,22 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                             ISD::UREM, ISD::SHL, ISD::SRA, ISD::SRL},
                            VT, Custom);
 
-        setOperationAction(
-            {ISD::SMIN, ISD::SMAX, ISD::UMIN, ISD::UMAX, ISD::ABS}, VT, Custom);
+#ifndef OPENASIP_MIN
+        setOperationAction(ISD::SMIN, VT, Custom);
+#endif
+#ifndef OPENASIP_MAX
+        setOperationAction(ISD::SMAX, VT, Custom);
+#endif
+#ifndef OPENASIP_MINU
+        setOperationAction(ISD::UMIN, VT, Custom);
+#endif
+#ifndef OPENASIP_MAXU
+        setOperationAction(ISD::UMAX, VT, Custom);
+#endif
+#ifndef OPENASIP_ABS
+        setOperationAction(ISD::ABS, VT, Custom);
+#endif
+
 
         // vXi64 MULHS/MULHU requires the V extension instead of Zve64*.
         if (VT.getVectorElementType() != MVT::i64 || Subtarget.hasStdExtV())
