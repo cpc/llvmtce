@@ -44,6 +44,8 @@
 #include "llvm/Support/WithColor.h"
 #include "llvm/TargetParser/Host.h"
 #include <memory>
+#include "llvm/Support/PluginLoader.h"
+#include "llvm/Support/DynamicLibrary.h"
 
 using namespace llvm;
 
@@ -377,6 +379,29 @@ static int AssembleInput(const char *ProgName, const Target *TheTarget,
   return Res;
 }
 
+
+void loadDynamicTargetPlugins() {
+  const std::vector<std::string> initFunctionNames = {
+      "LLVMInitializeRISCVTargetInfo",
+      "LLVMInitializeRISCVTargetMC",
+      "LLVMInitializeRISCVAsmParser",
+      "LLVMInitializeRISCVDisassembler"
+  };
+
+  // Get function pointers and call initialization functions
+  for (const auto& functionName : initFunctionNames) {
+    auto func = reinterpret_cast<void (*)()>(
+      sys::DynamicLibrary::SearchForAddressOfSymbol(
+        functionName.c_str()));
+    if (!func) {
+      llvm::outs() << "Error getting function pointer for "
+      << functionName << "\n";
+    } else {
+        func(); // Call initialization function
+    }
+  }
+}
+
 int main(int argc, char **argv) {
   InitLLVM X(argc, argv);
 
@@ -411,6 +436,8 @@ int main(int argc, char **argv) {
   MCOptions.AsmVerbose = true;
   MCOptions.MCUseDwarfDirectory = MCTargetOptions::EnableDwarfDirectory;
   MCOptions.InstPrinterOptions = InstPrinterOptions;
+
+  loadDynamicTargetPlugins();
 
   setDwarfDebugFlags(argc, argv);
   setDwarfDebugProducer();

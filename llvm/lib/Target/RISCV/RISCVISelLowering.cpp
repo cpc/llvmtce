@@ -50,6 +50,7 @@
 #include "llvm/Support/MathExtras.h"
 #include "llvm/Support/raw_ostream.h"
 #include <optional>
+#include "OpenASIPDefines.h"
 
 using namespace llvm;
 
@@ -392,7 +393,13 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   } else if (Subtarget.hasVendorXCVbitmanip() && !Subtarget.is64Bit()) {
     setOperationAction(ISD::ROTL, XLenVT, Expand);
   } else {
-    setOperationAction({ISD::ROTL, ISD::ROTR}, XLenVT, Expand);
+#ifndef OPENASIP_ROTL
+    setOperationAction(ISD::ROTL, XLenVT, Expand);
+#endif
+#ifndef OPENASIP_ROTR
+    setOperationAction(ISD::ROTR, XLenVT, Expand);
+#endif
+
   }
 
   if (Subtarget.hasStdExtP())
@@ -417,6 +424,19 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setOperationAction({ISD::SMIN, ISD::SMAX, ISD::UMIN, ISD::UMAX}, XLenVT,
                        Legal);
   }
+
+#ifdef OPENASIP_MIN
+  setOperationAction(ISD::SMIN, XLenVT, Legal);
+#endif
+#ifdef OPENASIP_MAX
+  setOperationAction(ISD::SMAX, XLenVT, Legal);
+#endif
+#ifdef OPENASIP_MINU
+  setOperationAction(ISD::UMIN, XLenVT, Legal);
+#endif
+#ifdef OPENASIP_MAXU
+  setOperationAction(ISD::UMAX, XLenVT, Legal);
+#endif
 
   if (Subtarget.hasCTZLike()) {
     if (Subtarget.is64Bit())
@@ -464,8 +484,10 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setOperationAction(ISD::ABS, MVT::i32, Custom);
   }
 
+#ifndef OPENASIP_SELECT
   if (!Subtarget.useMIPSCCMovInsn() && !Subtarget.hasVendorXTHeadCondMov())
     setOperationAction(ISD::SELECT, XLenVT, Custom);
+#endif
 
   if ((Subtarget.hasStdExtP() || Subtarget.hasVendorXqcia()) &&
       !Subtarget.is64Bit()) {
@@ -1535,8 +1557,22 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                             ISD::UREM, ISD::SHL, ISD::SRA, ISD::SRL},
                            VT, Custom);
 
-        setOperationAction(
-            {ISD::SMIN, ISD::SMAX, ISD::UMIN, ISD::UMAX, ISD::ABS}, VT, Custom);
+#ifndef OPENASIP_MIN
+        setOperationAction(ISD::SMIN, VT, Custom);
+#endif
+#ifndef OPENASIP_MAX
+        setOperationAction(ISD::SMAX, VT, Custom);
+#endif
+#ifndef OPENASIP_MINU
+        setOperationAction(ISD::UMIN, VT, Custom);
+#endif
+#ifndef OPENASIP_MAXU
+        setOperationAction(ISD::UMAX, VT, Custom);
+#endif
+#ifndef OPENASIP_ABS
+        setOperationAction(ISD::ABS, VT, Custom);
+#endif
+
 
         setOperationAction({ISD::ABDS, ISD::ABDU}, VT, Custom);
 

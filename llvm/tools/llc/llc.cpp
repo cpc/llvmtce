@@ -64,6 +64,15 @@
 #include <cassert>
 #include <memory>
 #include <optional>
+
+#include "llvm/Support/DynamicLibrary.h"
+
+
+#include <iostream>
+
+typedef int (*FuncPtr)();
+
+
 using namespace llvm;
 
 static codegen::RegisterCodeGenFlags CGF;
@@ -365,6 +374,40 @@ static std::unique_ptr<ToolOutputFile> GetOutputStream(Triple::OSType OS) {
   return FDOut;
 }
 
+void loadDynamicTargetPlugins() {
+  // Load any given target plugins
+  for (unsigned i = 0; i < LoadOpt.getNumPlugins(); i++) {
+    const char* libPath = LoadOpt.getPlugin(i).c_str();
+    // Load the shared library
+    if (!sys::DynamicLibrary::LoadLibraryPermanently(libPath)) {
+      // Define initialization function names
+      const std::vector<std::string> initFunctionNames = {
+          "LLVMInitializeRISCVTarget",
+          "LLVMInitializeRISCVTargetInfo",
+          "LLVMInitializeRISCVTargetMC",
+          "LLVMInitializeRISCVTargetMCA",
+          "LLVMInitializeRISCVAsmParser",
+          "LLVMInitializeRISCVAsmPrinter"
+      };
+
+      // Get function pointers and call initialization functions
+      for (const auto& functionName : initFunctionNames) {
+        auto func = reinterpret_cast<void (*)()>(
+          sys::DynamicLibrary::SearchForAddressOfSymbol(
+            functionName.c_str()));
+        if (!func) {
+            std::cerr << "Error getting function pointer for "
+            << functionName << std::endl;
+        } else {
+            func(); // Call initialization function
+        }
+      }
+    } else {
+      std::cerr << "Error in loading plugin" << std::endl;
+    }
+  }
+}
+
 // main - Entry point for the llc compiler.
 //
 int main(int argc, char **argv) {
@@ -378,6 +421,15 @@ int main(int argc, char **argv) {
   InitializeAllTargetMCs();
   InitializeAllAsmPrinters();
   InitializeAllAsmParsers();
+
+  /*
+  * TODO: It is necessary to parse here to register --load
+    If we parse the cmdline here, --version does not work correctly.
+  *       
+  */
+  cl::ParseCommandLineOptions(argc, argv, "llvm system compiler\n");
+  loadDynamicTargetPlugins();
+
 
   // Initialize codegen and IR passes used by llc so that the -print-after,
   // -print-before, and -stop-after options work.
@@ -413,7 +465,6 @@ int main(int argc, char **argv) {
   // Register the target printer for --version.
   cl::AddExtraVersionPrinter(TargetRegistry::printRegisteredTargetsForVersion);
 
-  cl::ParseCommandLineOptions(argc, argv, "llvm system compiler\n");
 
   if (!PassPipeline.empty() && !getRunPassNames().empty()) {
     errs() << "The `llc -run-pass=...` syntax for the new pass manager is "
